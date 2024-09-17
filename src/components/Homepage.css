@@ -1,0 +1,192 @@
+
+
+/* Basic Reset */
+* {
+  max-width: 1080px;
+  margin:  20px auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.homepage {
+  width: 100%;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: white;
+}
+
+.logo h1 {
+ 
+  font-size: 24px;
+  font-family: "Krona One", sans-serif;
+  font-weight: 243px;
+  font-style: normal;
+  
+
+}
+
+.highlight {
+  color: #f4bc00;
+}
+
+.nav-links a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: black;
+}
+
+.auth-buttons {
+  display: flex;
+}
+
+.signin-btn,
+.register-btn {
+  margin-left: 10px;
+  padding: 8px 15px;
+  border: none;
+  cursor: pointer;
+}
+
+.signin-btn {
+  background-color: white;
+  border: 1px solid #000;
+}
+
+.register-btn {
+  background-color: #000;
+  color: white;
+}
+
+/* Hero Section */
+.hero {
+  background-image: url(../pexels-thorsten-technoman-109353-338504.jpg);
+   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.hero-text {
+  max-width: 50%;
+}
+
+.hero-text h2 {
+  font-size: 2rem;
+}
+
+.hero-text p {
+  margin-top: 10px;
+}
+
+.book-now-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #000;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.hero-image img {
+  width: 800px;
+  height: auto;
+}
+
+/* Gallery Section */
+.gallery-section {
+  margin-top: 2rem;
+  padding: 0 2rem;
+}
+
+.gallery {
+  display: flex;
+  align-items: center;
+}
+
+.gallery-arrow {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.gallery-images {
+  display: flex;
+}
+
+.gallery-images img {
+  width: 300px;
+  height: auto;
+  margin: 0 10px;
+}
+
+/* Amenities Section */
+.amenities {
+  display: flex;
+  padding: 2rem;
+}
+
+.icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.icons img {
+  width: 200px;
+  height: auto;
+}
+
+.description {
+  max-width: 50%;
+  padding-left: 2rem;
+   font-family: "Josefin Slab", serif;
+  font-optical-sizing: auto;
+  font-weight: bold;
+  
+}
+
+/* Footer */
+.footer {
+  background-color: #f4f4f4;
+  padding: 2rem;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: space-between;
+}
+
+.footer-links div {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.footer-links h4 {
+  margin-bottom: 10px;
+}
+
+.footer-links ul {
+  list-style-type: none;
+}
+
+.footer-links ul li {
+  margin-bottom: 5px;
+}
