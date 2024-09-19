@@ -80,12 +80,11 @@ const Homepage = () => {
       <footer className="footer">
         <div className="footer-links">
           <div>
-            <h4>Use Cases</h4>
+            <h4>Contact US</h4>
             <ul>
-              <li>UI Design</li>
-              <li>UX Design</li>
-              <li>Wireframing</li>
-              <li>Team Collaboration</li>
+              <li>011 345 4456</li>
+              <li>helpline@malapeng.co.za</li>
+              
             </ul>
           </div>
           <div>
@@ -100,10 +99,9 @@ const Homepage = () => {
           <div>
             <h4>Resources</h4>
             <ul>
-              <li>Blog</li>
-              <li>Support</li>
-              <li>Best Practices</li>
-              <li>Color Wheel</li>
+              <li>Gallery</li>
+              <li>Socials</li>
+              
             </ul>
           </div>
         </div>

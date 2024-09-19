@@ -1,0 +1,32 @@
+.room-section {
+  display: flex;
+  justify-content: space-around;
+  margin: 40px 0;
+}
+
+.room-card {
+  width: 300px;
+  background-color: #f0f0f0;
+  padding: 10px;
+  text-align: center;
+}
+
+.room-image {
+  width: 50%;
+  height: 10%;
+  border-radius: 5px;
+}
+
+.book-now-btn {
+  margin-top: 15px;
+  background-color: #d7a29e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.book-now-btn:hover {
+  background-color: #b88685;
+}
