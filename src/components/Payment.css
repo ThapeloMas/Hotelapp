@@ -1,5 +1,23 @@
+.payment-wrapper {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-image: url('../images/1687336635_payment.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+
+
+
 
  .modal {
+
      width: fit-content;
   height: fit-content;
   background: #FFFFFF;

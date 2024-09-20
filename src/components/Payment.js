@@ -1,17 +1,14 @@
 
 import React from "react";
-import styled from "styled-components";
-import "./Payment.css"; 
-
+import "./Payment.css";
 
 const Payment = () => {
   return (
-    <StyledWrapper>
+    <div className="payment-wrapper">
       <div className="modal">
         <form className="form">
-          <div className="payment--options">
-            
-          </div>
+          <div className="payment--options"></div>
+
           <div className="separator">
             <hr className="line" />
             <h1>Book now</h1>
@@ -19,38 +16,38 @@ const Payment = () => {
           </div>
           <div className="credit-card-info--form">
             <div className="input_container">
-              <label htmlFor="password_field" className="input_label">
+              <label htmlFor="name_field" className="input_label">
                 Card holder full name
               </label>
               <input
-                id="password_field"
+                id="name_field"
                 className="input_field"
                 type="text"
                 name="input-name"
-                title="Inpit title"
+                title="Input title"
                 placeholder="Enter your full name"
               />
             </div>
             <div className="input_container">
-              <label htmlFor="password_field" className="input_label">
+              <label htmlFor="card_field" className="input_label">
                 Card Number
               </label>
               <input
-                id="password_field"
+                id="card_field"
                 className="input_field"
                 type="number"
                 name="input-name"
-                title="Inpit title"
+                title="Input title"
                 placeholder="0000 0000 0000 0000"
               />
             </div>
             <div className="input_container">
-              <label htmlFor="password_field" className="input_label">
+              <label htmlFor="expiry_field" className="input_label">
                 Expiry Date / CVV
               </label>
               <div className="split">
                 <input
-                  id="password_field"
+                  id="expiry_field"
                   className="input_field"
                   type="text"
                   name="input-name"
@@ -58,7 +55,7 @@ const Payment = () => {
                   placeholder="01/23"
                 />
                 <input
-                  id="password_field"
+                  id="cvv_field"
                   className="input_field"
                   type="number"
                   name="cvv"
@@ -71,12 +68,8 @@ const Payment = () => {
           <button className="purchase--btn">Checkout</button>
         </form>
       </div>
-    </StyledWrapper>
+    </div>
   );
 };
-
-const StyledWrapper = styled.div`
- 
-`;
 
 export default Payment;

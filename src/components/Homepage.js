@@ -1,15 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link as ScrollLink } from "react-scroll"; 
+import { Link } from "react-router-dom";
 import "./Homepage.css";
-import hotelpic from '../hoteland.jpg';
-import gpic from '../images/3B.jpg';
-import gpic2 from '../images/1B.jpg';
+import hotelpic from "../hoteland.jpg";
+import gpic from "../images/3B.jpg";
+import gpic2 from "../images/1B.jpg";
 import gpic3 from "../images/2H.jpg";
-import gpic4 from "../images/H3.jpg";
+import heroImg1 from "../images/pexels-pixabay-276671.jpg";
+import heroImg2 from "../images/2B.jpg";
+import heroImg3 from "../images/1H.jpg";
 
 const Homepage = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = [heroImg1, heroImg2, heroImg3];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   return (
     <div className="homepage">
-      {/* Header Section */}
+   
       <header className="navbar">
         <div className="logo">
           <h1>
@@ -17,19 +32,32 @@ const Homepage = () => {
           </h1>
         </div>
         <nav className="nav-links">
-          <a href="#">Home</a>
-          <a href="#">Book Now</a>
-          <a href="#">Gallery</a>
-          <a href="#">About Us</a>
+          <Link to="/">Home</Link>
+          <Link to="/rooms">Book Now</Link> 
+        
+          <ScrollLink
+            to="gallery-section"
+            smooth={true}
+            duration={500}
+            offset={-50}
+          >
+            Gallery
+          </ScrollLink>
           <div className="auth-buttons">
-            <button className="signin-btn">Sign in</button>
-            <button className="register-btn">Register</button>
+            <Link to="/login">
+              <button className="signin-btn">Sign in</button>
+            </Link>
+            <Link to="/login">
+              <button className="register-btn">Register</button>
+            </Link>
           </div>
         </nav>
       </header>
 
-      {/* Hero Section */}
-      <section className="hero">
+      <section
+        className="hero"
+        style={{ backgroundImage: `url(${images[currentImageIndex]})` }}
+      >
         <div className="hero-text">
           <h2>
             Welcome to your perfect stay! Discover a world of{" "}
@@ -40,12 +68,14 @@ const Homepage = () => {
             feels like home, but better. Book now and let your dream getaway
             begin!
           </p>
-          <button className="book-now-btn">Book Now</button>
+          <Link to="/rooms">
+            <button className="book-now-btn">Book Now</button>
+          </Link>{" "}
         </div>
       </section>
 
-      {/* Gallery Section */}
-      <section className="gallery-section">
+ 
+      <section id="gallery-section" className="gallery-section">
         <h3>Gallery</h3>
         <div className="gallery">
           <button className="gallery-arrow">&lt;</button>
@@ -58,10 +88,9 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* Amenities Section */}
+     
       <section className="amenities">
         <div className="icons">
-          {/* Add amenity icons here */}
           <img src={hotelpic} alt="Icon 1" />
         </div>
         <div className="description">
@@ -76,7 +105,6 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="footer">
         <div className="footer-links">
           <div>
@@ -84,7 +112,6 @@ const Homepage = () => {
             <ul>
               <li>011 345 4456</li>
               <li>helpline@malapeng.co.za</li>
-              
             </ul>
           </div>
           <div>
@@ -101,7 +128,6 @@ const Homepage = () => {
             <ul>
               <li>Gallery</li>
               <li>Socials</li>
-              
             </ul>
           </div>
         </div>
@@ -111,4 +137,3 @@ const Homepage = () => {
 };
 
 export default Homepage;
-

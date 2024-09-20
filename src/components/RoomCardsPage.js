@@ -1,15 +1,15 @@
 import React from "react";
 import RoomCard from "./RoomCard";
-import SearchBar from "./SearchBar"; // Import SearchBar component
-import "./RoomCardsPage.css"; // Custom styles for the page
+import SearchBar from "./SearchBar";
+import "./RoomCardsPage.css"; 
 
 const RoomCardsPage = () => {
   return (
     <div>
-      {/* Include the SearchBar at the top */}
+  
       <SearchBar />
 
-      {/* Room cards section */}
+     
       <div className="room-section">
         <RoomCard />
         <RoomCard />

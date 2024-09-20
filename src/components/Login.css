@@ -1,4 +1,4 @@
-/* From Uiverse.io by andrew-demchenk0 */ 
+ 
 .wrapper {
   --input-focus: #2d8cf0;
   --font-color: #323232;
@@ -6,11 +6,9 @@
   --bg-color: #fff;
   --bg-color-alt: #666;
   --main-color: #323232;
-    /* display: flex; */
-    /* flex-direction: column; */
-    /* align-items: center; */
+
 }
-/* switch card */
+
 .switch {
   transform: translateY(-200px);
   position: relative;
