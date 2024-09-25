@@ -1,6 +1,5 @@
 
 
-/* Basic Reset */
 * {
   max-width: 1080px;
   margin:  20px auto;
@@ -17,7 +16,7 @@ body {
   width: 100%;
 }
 
-/* Navbar */
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -68,7 +67,7 @@ body {
   color: white;
 }
 
-/* Hero Section */
+
 .hero {
 background-size: cover;
   background-position: center;
@@ -108,7 +107,6 @@ background-size: cover;
   height: auto;
 }
 
-/* Gallery Section */
 .gallery-section {
   margin-top: 2rem;
   padding: 0 2rem;
@@ -136,7 +134,7 @@ background-size: cover;
   margin: 0 10px;
 }
 
-/* Amenities Section */
+
 .amenities {
   display: flex;
   padding: 2rem;
