@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addRoom } from "../store/roomSlice";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig"; // Import Firestore instance
 
 function AdminDashboard() {
   const [roomNumber, setRoomNumber] = useState("");
@@ -10,20 +12,31 @@ function AdminDashboard() {
   const [photos, setPhotos] = useState([]);
   const dispatch = useDispatch();
 
-  const handleAddRoom = () => {
+  const handleAddRoom = async () => {
     if (roomNumber && price && location && photos.length > 0) {
       const newRoom = {
-        id: Date.now(),
         roomNumber,
         price,
         location,
-        photos,
+        photos, // Photos are already in Base64 format
       };
-      dispatch(addRoom(newRoom)); // Dispatching the room to the Redux store
-      setRoomNumber("");
-      setPrice("");
-      setLocation("");
-      setPhotos([]);
+
+      try {
+        // Save room data to Firestore
+        const docRef = await addDoc(collection(db, "rooms"), newRoom);
+        console.log("Room added with ID: ", docRef.id);
+
+        // Dispatch the room to the Redux store
+        dispatch(addRoom(newRoom));
+
+        // Clear form fields
+        setRoomNumber("");
+        setPrice("");
+        setLocation("");
+        setPhotos([]);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     } else {
       alert("Please fill all fields and upload a photo.");
     }
@@ -33,7 +46,7 @@ function AdminDashboard() {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setPhotos([...photos, reader.result]);
+      setPhotos([...photos, reader.result]); // Base64 format
     };
     reader.readAsDataURL(file);
   };

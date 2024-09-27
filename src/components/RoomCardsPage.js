@@ -1,31 +1,51 @@
-
-
-// components/RoomCardsPage.js
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebaseConfig"; // Firestore instance
+import "./RoomCardsPage.css"; // Import your CSS file
 
 function RoomCardsPage() {
-  const rooms = useSelector((state) => state.rooms);
+  const [rooms, setRooms] = useState([]);
 
-  // Check if `rooms` is defined and has items
-  if (!rooms || rooms.length === 0) {
-    return <p>No rooms available. Please add rooms from the admin dashboard.</p>;
+  useEffect(() => {
+    const fetchRooms = async () => {
+      const querySnapshot = await getDocs(collection(db, "rooms"));
+      const roomList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setRooms(roomList);
+    };
+
+    fetchRooms();
+  }, []);
+
+  if (rooms.length === 0) {
+    return (
+      <p>No rooms available. Please add rooms from the admin dashboard.</p>
+    );
   }
 
   return (
     <div>
       <h2>Available Hotels</h2>
-      <div className="room-cards-container">
+      <div className="room-section">
         {rooms.map((room) => (
           <div key={room.id} className="room-card">
             <h3>Room {room.roomNumber}</h3>
             <p>Location: {room.location}</p>
-            <p>Price: ${room.price}</p>
+            <p className="room-price">Price: ${room.price}</p>
+
             <div className="room-photos">
               {room.photos.map((photo, index) => (
-                <img key={index} src={photo} alt={`Room ${room.roomNumber}`} width="100%" />
+                <img
+                  key={index}
+                  src={photo}
+                  alt={`Room ${room.roomNumber}`}
+                  className="room-image"
+                />
               ))}
             </div>
+            <button className="book-now-btn">Book Now</button>
           </div>
         ))}
       </div>
