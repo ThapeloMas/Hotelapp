@@ -1,36 +1,53 @@
-/* AdminDashboard.css */
-.admin-dashboard {
-  padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
+.room-section {
+  display: flex;
+  justify-content: space-around;
+  margin: 40px 0;
+  flex-wrap: wrap; /* Allows wrapping if there are too many cards */
 }
 
-.form-group {
-  margin-bottom: 20px;
+.room-card {
+  width: 300px;
+  height: auto; /* Allow height to adjust based on content */
+  background-color: #f0f0f0;
+  padding: 10px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px; /* Adds spacing between cards */
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
+.room-photos {
+  width: 100%; /* Ensure the image container takes up full width */
+  height: 200px; /* Adjust height as needed */
+  overflow: hidden; /* Hide any overflow */
+  border-radius: 5px;
+  margin-bottom: 10px; /* Adds some space below the image */
+}
+
+.room-image {
+  width: 100%; /* Make sure the image fills the container */
+  height: 100%;
+  object-fit: cover; /* Ensures the image fits within the container without distortion */
+  border-radius: 5px; /* Keeps the image rounded inside the card */
+}
+
+.room-price {
+  margin: 15px 0;
+  font-size: 18px;
   font-weight: bold;
+  color: #333;
 }
 
-input[type="text"],
-input[type="file"] {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-}
-
-button {
-  padding: 10px 20px;
-  background-color: #007bff;
+.book-now-btn {
+  margin-top: 15px;
+  background-color: #d7a29e;
   color: white;
   border: none;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #0056b3;
+.book-now-btn:hover {
+  background-color: #b88685;
 }

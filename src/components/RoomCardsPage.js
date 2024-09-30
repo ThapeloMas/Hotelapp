@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig"; // Firestore instance
+import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 import "./RoomCardsPage.css"; // Import your CSS file
 
 function RoomCardsPage() {
   const [rooms, setRooms] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -18,6 +20,10 @@ function RoomCardsPage() {
 
     fetchRooms();
   }, []);
+
+  const handleBookNow = (room) => {
+    navigate("/bookingdetails", { state: { room } }); // Pass room data using navigate
+  };
 
   if (rooms.length === 0) {
     return (
@@ -45,7 +51,12 @@ function RoomCardsPage() {
                 />
               ))}
             </div>
-            <button className="book-now-btn">Book Now</button>
+            <button
+              className="book-now-btn"
+              onClick={() => handleBookNow(room)} // Pass room object to handleBookNow
+            >
+              Book Now
+            </button>
           </div>
         ))}
       </div>

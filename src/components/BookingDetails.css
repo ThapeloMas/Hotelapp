@@ -75,3 +75,11 @@
 .guest-details {
   margin-top: 20px;
 }
+
+.room-photos {
+  width: 100%; /* Ensure the image container takes up full width */
+  height: 200px; /* Adjust height as needed */
+  overflow: hidden; /* Hide any overflow */
+  border-radius: 5px;
+  margin-bottom: 10px; /* Adds some space below the image */
+}
