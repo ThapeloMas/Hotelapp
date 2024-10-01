@@ -9,22 +9,30 @@ import Payment from "./components/Payment";
 import RoomCardsPage from "./components/RoomCardsPage";
 import BookingDetails from "./components/BookingDetails";
 import AdminDashboard from "./components/AdminDashboard";
+import AdminRoute from "./components/AdminRoute"; // Import AdminRoute
+import { auth } from "./firebaseConfig";
 
 function App() {
   return (
     <Provider store={store}>
-      {" "}
-      {/* Make sure the Provider is wrapping the Router */}
       <Router>
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/payment" element={<Payment />} />
-          <Route path="/rooms" element={<RoomCardsPage />} />{" "}
-          {/* RoomCardsPage Route */}
+          <Route path="/rooms" element={<RoomCardsPage />} />
           <Route path="/bookingdetails" element={<BookingDetails />} />
-          <Route path="/admin" element={<AdminDashboard />} />{" "}
-          {/* AdminDashboard Route */}
+
+          {/* Protect the AdminDashboard route using AdminRoute */}
+          <Route
+            path="/admin"
+
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
         </Routes>
       </Router>
     </Provider>

@@ -5,25 +5,41 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { doc, getDoc } from "firebase/firestore"; // Import Firestore methods for fetching user data
 import "./Login.css";
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
-  const [isUser, setIsUser] = useState("user");
-  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState(""); // State to store error messages
   const navigate = useNavigate(); // Initialize useNavigate
 
+  // Function to fetch user role from Firestore
+  const getUserRole = async (uid) => {
+    const userDoc = await getDoc(doc(db, "users", uid)); // Fetch the user document
+    if (userDoc.exists()) {
+      return userDoc.data().role; // Return the user's role (e.g., "admin" or "user")
+    }
+    return null;
+  };
+
   const handleSignUp = (e) => {
     e.preventDefault();
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         console.log("User registered:", userCredential.user);
+        const userRole = await getUserRole(userCredential.user.uid); // Fetch the user role
+
+        // Navigate based on the role
+        if (userRole === "admin") {
+          navigate("/admin"); // Navigate to AdminDashboard if user is an admin
+        } else {
+          navigate("/rooms"); // Navigate to RoomCardsPage if user is not an admin
+        }
+
         setError(""); // Clear any existing error
-        navigate("/rooms"); // Navigate to RoomCardsPage after signup
       })
       .catch((error) => {
         // Catch errors and set an error message
@@ -34,7 +50,7 @@ function Login() {
         } else if (error.code === "auth/weak-password") {
           setError("Password should be at least 6 characters.");
         } else {
-          setError("Error signing up.Email or password is wrong");
+          setError("Error signing up.");
         }
       });
   };
@@ -42,10 +58,20 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         console.log("User logged in:", userCredential.user);
+
+        const userRole = await getUserRole(userCredential.user.uid); // Fetch the user role
+        console.log("User Role:", userRole);
+
+        // Navigate based on the role
+        if (userRole === "admin") {
+          navigate("/admin"); // Navigate to AdminDashboard if user is an admin
+        } else {
+          navigate("/rooms"); // Navigate to RoomCardsPage if user is not an admin
+        }
+
         setError(""); // Clear any existing error
-        navigate("/rooms"); // Navigate to RoomCardsPage after login
       })
       .catch((error) => {
         // Catch errors and set an error message
@@ -56,7 +82,7 @@ function Login() {
         } else if (error.code === "auth/invalid-email") {
           setError("Invalid email format.");
         } else {
-          setError("Error while logging in.Email or password is wrong");
+          setError("Error while logging in.");
         }
       });
   };
