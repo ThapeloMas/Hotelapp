@@ -1,0 +1,15 @@
+/* App.css */
+.logout-btn {
+  background-color: #ff4b5c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.logout-btn:hover {
+  background-color: #ff2e3b;
+}

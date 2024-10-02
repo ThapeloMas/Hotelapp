@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link as ScrollLink } from "react-scroll"; 
+import { Link as ScrollLink } from "react-scroll";
 import { Link } from "react-router-dom";
 import "./Homepage.css";
 import hotelpic from "../hoteland.jpg";
@@ -14,6 +14,9 @@ const Homepage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = [heroImg1, heroImg2, heroImg3];
 
+  const galleryImages = [gpic, gpic2, gpic3];
+  const [galleryImageIndex, setGalleryImageIndex] = useState(0);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -22,9 +25,19 @@ const Homepage = () => {
     return () => clearInterval(interval);
   }, [images.length]);
 
+  const handleNextImage = () => {
+    setGalleryImageIndex((prevIndex) => (prevIndex + 1) % galleryImages.length);
+  };
+
+  const handlePrevImage = () => {
+    setGalleryImageIndex(
+      (prevIndex) =>
+        (prevIndex - 1 + galleryImages.length) % galleryImages.length
+    );
+  };
+
   return (
     <div className="homepage">
-   
       <header className="navbar">
         <div className="logo">
           <h1>
@@ -33,8 +46,8 @@ const Homepage = () => {
         </div>
         <nav className="nav-links">
           <Link to="/">Home</Link>
-          <Link to="/rooms">Book Now</Link> 
-        
+          <Link to="/rooms">Book Now</Link>
+
           <ScrollLink
             to="gallery-section"
             smooth={true}
@@ -74,21 +87,24 @@ const Homepage = () => {
         </div>
       </section>
 
- 
       <section id="gallery-section" className="gallery-section">
         <h3>Gallery</h3>
         <div className="gallery">
-          <button className="gallery-arrow">&lt;</button>
+          <button className="gallery-arrow" onClick={handlePrevImage}>
+            &lt;
+          </button>
           <div className="gallery-images">
-            <img src={gpic} alt="Room 1" />
-            <img src={gpic2} alt="Room 2" />
-            <img src={gpic3} alt="Room 2" />
+            <img
+              src={galleryImages[galleryImageIndex]}
+              alt={`Room ${galleryImageIndex + 1}`}
+            />
           </div>
-          <button className="gallery-arrow">&gt;</button>
+          <button className="gallery-arrow" onClick={handleNextImage}>
+            &gt;
+          </button>
         </div>
       </section>
 
-     
       <section className="amenities">
         <div className="icons">
           <img src={hotelpic} alt="Icon 1" />

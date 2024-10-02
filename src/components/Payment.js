@@ -64,7 +64,7 @@ const Payment = () => {
             <div className="room-details">
               <h2>Room Number: {roomNumber}</h2>
               <h3>Total Nights: {numDays}</h3>
-              <h3>Total Amount: ${totalPrice}</h3>
+              <h3>Total Amount: R{totalPrice}</h3>
             </div>
           )}
 

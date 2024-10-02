@@ -79,12 +79,16 @@ function AdminDashboard() {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
+          <br></br>
           <label>Location</label>
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
+          <br>
+          
+          </br>
           <label>Photos</label>
           <input type="file" onChange={handlePhotoUpload} />
           <button className="book-now-btn" onClick={handleAddRoom}>

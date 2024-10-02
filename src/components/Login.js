@@ -1,90 +1,116 @@
 import React, { useState } from "react";
 import { auth, db } from "../firebaseConfig";
+import { sendPasswordResetEmail } from "firebase/auth";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { doc, getDoc } from "firebase/firestore"; // Import Firestore methods for fetching user data
+import { useNavigate } from "react-router-dom";
+import { doc, getDoc, setDoc } from "firebase/firestore"; // Import Firestore methods for fetching and saving user data
 import "./Login.css";
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [resetEmailSent, setResetEmailSent] = useState(false);
   const [name, setName] = useState("");
-  const [error, setError] = useState(""); // State to store error messages
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [profilePicture, setProfilePicture] = useState(""); // State for profile picture
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  // Function to fetch user role from Firestore
   const getUserRole = async (uid) => {
-    const userDoc = await getDoc(doc(db, "users", uid)); // Fetch the user document
+    const userDoc = await getDoc(doc(db, "users", uid));
     if (userDoc.exists()) {
-      return userDoc.data().role; // Return the user's role (e.g., "admin" or "user")
+      return userDoc.data().role;
     }
     return null;
   };
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        console.log("User registered:", userCredential.user);
-        const userRole = await getUserRole(userCredential.user.uid); // Fetch the user role
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("User registered:", userCredential.user);
 
-        // Navigate based on the role
-        if (userRole === "admin") {
-          navigate("/admin"); // Navigate to AdminDashboard if user is an admin
-        } else {
-          navigate("/rooms"); // Navigate to RoomCardsPage if user is not an admin
-        }
+      // Save user info to Firestore, including profile picture
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        name,
+        email,
+        profilePicture, // Save base64 image
+        role: "user", // Set default role
+      });
 
-        setError(""); // Clear any existing error
+      const userRole = await getUserRole(userCredential.user.uid);
+      navigate(userRole === "admin" ? "/admin" : "/rooms");
+      setError("");
+    } catch (error) {
+      setError(getErrorMessage(error));
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("User logged in:", userCredential.user);
+
+      const userRole = await getUserRole(userCredential.user.uid);
+      console.log("User Role:", userRole);
+      navigate(userRole === "admin" ? "/admin" : "/rooms");
+      setError("");
+    } catch (error) {
+      setError(getErrorMessage(error));
+    }
+  };
+
+  const getErrorMessage = (error) => {
+    switch (error.code) {
+      case "auth/email-already-in-use":
+        return "Email is already in use.";
+      case "auth/invalid-email":
+        return "Invalid email format.";
+      case "auth/weak-password":
+        return "Password should be at least 6 characters.";
+      case "auth/wrong-password":
+        return "Incorrect password.";
+      case "auth/user-not-found":
+        return "No user found with this email.";
+      default:
+        return "Error occurred.";
+    }
+  };
+
+  const handlePasswordReset = () => {
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        setResetEmailSent(true);
+        setError("");
       })
-      .catch((error) => {
-        // Catch errors and set an error message
-        if (error.code === "auth/email-already-in-use") {
-          setError("Email is already in use.");
-        } else if (error.code === "auth/invalid-email") {
-          setError("Invalid email format.");
-        } else if (error.code === "auth/weak-password") {
-          setError("Password should be at least 6 characters.");
-        } else {
-          setError("Error signing up.");
-        }
+      .catch(() => {
+        setError(
+          "Failed to send password reset email. Make sure the email is valid."
+        );
       });
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        console.log("User logged in:", userCredential.user);
-
-        const userRole = await getUserRole(userCredential.user.uid); // Fetch the user role
-        console.log("User Role:", userRole);
-
-        // Navigate based on the role
-        if (userRole === "admin") {
-          navigate("/admin"); // Navigate to AdminDashboard if user is an admin
-        } else {
-          navigate("/rooms"); // Navigate to RoomCardsPage if user is not an admin
-        }
-
-        setError(""); // Clear any existing error
-      })
-      .catch((error) => {
-        // Catch errors and set an error message
-        if (error.code === "auth/wrong-password") {
-          setError("Incorrect password.");
-        } else if (error.code === "auth/user-not-found") {
-          setError("No user found with this email.");
-        } else if (error.code === "auth/invalid-email") {
-          setError("Invalid email format.");
-        } else {
-          setError("Error while logging in.");
-        }
-      });
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result); // Set the base64 image
+      };
+      reader.readAsDataURL(file); // Convert to base64
+    }
   };
 
   return (
@@ -123,6 +149,11 @@ function Login() {
                     Let's go!
                   </button>
                   {error && <p className="error-message">{error}</p>}
+
+                  <button onClick={handlePasswordReset}>
+                    Forgot Password?
+                  </button>
+                  {resetEmailSent && <p>Password reset email sent!</p>}
                 </form>
               </div>
             ) : (
@@ -138,7 +169,6 @@ function Login() {
                   />
                   <input
                     className="flip-card__input"
-                    name="email"
                     placeholder="Email"
                     type="email"
                     value={email}
@@ -146,11 +176,17 @@ function Login() {
                   />
                   <input
                     className="flip-card__input"
-                    name="password"
                     placeholder="Password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                  />
+                  {/* File input for profile picture */}
+                  <input
+                    className="flip-card__input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
                   />
                   <button className="flip-card__btn" type="submit">
                     Confirm!

@@ -37,7 +37,7 @@ function BookingDetails() {
             <div className="room-summary">
               <h2>Room {room.roomNumber}</h2>
               <p>Location: {room.location}</p>
-              <p className="room-price">Price: ${room.price}</p>
+              <p className="room-price">Price: R{room.price}</p>
               <div className="room-photos">
                 {room.photos.map((photo, index) => (
                   <img

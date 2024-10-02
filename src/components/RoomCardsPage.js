@@ -39,7 +39,7 @@ function RoomCardsPage() {
           <div key={room.id} className="room-card">
             <h3>Room {room.roomNumber}</h3>
             <p>Location: {room.location}</p>
-            <p className="room-price">Price: ${room.price}</p>
+            <p className="room-price">Price: R{room.price}</p>
 
             <div className="room-photos">
               {room.photos.map((photo, index) => (
