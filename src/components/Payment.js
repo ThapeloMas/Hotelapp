@@ -1,10 +1,23 @@
-
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import "./Payment.css";
 
-const Payment = () => {
+// Load your Stripe publishable key
+const stripePromise = loadStripe(
+  ''
+);
+
+const PaymentForm = () => {
   const location = useLocation();
+  const stripe = useStripe();
+  const elements = useElements();
   const { roomNumber, price, numDays } = location.state || {};
 
   // Calculate the total price
@@ -12,48 +25,42 @@ const Payment = () => {
 
   // State for form fields
   const [name, setName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const validatePayment = () => {
-    let errorMessages = [];
-
-    // Check if name is not empty
-    if (!name.trim()) {
-      errorMessages.push("Please enter your full name.");
-    }
-
-    // Validate card number (16 digits)
-    if (cardNumber.length !== 16) {
-      errorMessages.push("Card number must be 16 digits long.");
-    }
-
-    // Validate CVV (3 digits)
-    if (cvv.length !== 3) {
-      errorMessages.push("CVV must be 3 digits long.");
-    }
-
-    // If there are errors, show the error messages in an alert
-    if (errorMessages.length > 0) {
-      alert(`Booking not successful:\n${errorMessages.join("\n")}`);
-    } else {
-      // If everything is valid, show a success message
-      alert("Booking successful!");
-    }
-  };
-
-  const handleCheckout = (e) => {
+  const handleCheckout = async (e) => {
     e.preventDefault();
-    validatePayment();
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsProcessing(true);
+    setErrorMessage(null);
+
+    const cardElement = elements.getElement(CardElement);
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: "card",
+      card: cardElement,
+      billing_details: {
+        name,
+      },
+    });
+
+    if (error) {
+      setErrorMessage(error.message);
+      setIsProcessing(false);
+    } else {
+      // Here you would typically call your backend to create a payment intent and confirm the payment
+      // For demonstration purposes, we're showing a success message
+      alert("Booking successful!");
+      setIsProcessing(false);
+    }
   };
 
   return (
     <div className="payment-wrapper">
       <div className="modal">
         <form className="form" onSubmit={handleCheckout}>
-          <div className="payment--options"></div>
-
           <div className="separator">
             <hr className="line" />
             <h1>Book now</h1>
@@ -80,56 +87,37 @@ const Payment = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your full name"
+                required
               />
             </div>
 
             <div className="input_container">
-              <label htmlFor="card_field" className="input_label">
-                Card Number
-              </label>
-              <input
-                id="card_field"
-                className="input_field"
-                type="number"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                placeholder="0000 0000 0000 0000"
-                maxLength="16"
-              />
+              <label className="input_label">Card Details</label>
+              <CardElement className="input_field" />
             </div>
 
-            <div className="input_container">
-              <label htmlFor="expiry_field" className="input_label">
-                Expiry Date / CVV
-              </label>
-              <div className="split">
-                <input
-                  id="expiry_field"
-                  className="input_field"
-                  type="text"
-                  value={expiry}
-                  onChange={(e) => setExpiry(e.target.value)}
-                  placeholder="01/23"
-                />
-                <input
-                  id="cvv_field"
-                  className="input_field"
-                  type="number"
-                  value={cvv}
-                  onChange={(e) => setCvv(e.target.value)}
-                  placeholder="CVV"
-                  maxLength="3"
-                />
-              </div>
-            </div>
+            {errorMessage && (
+              <div className="error-message">{errorMessage}</div>
+            )}
           </div>
-          <button className="purchase--btn" type="submit">
-            Checkout
+
+          <button
+            className="purchase--btn"
+            type="submit"
+            disabled={!stripe || isProcessing}
+          >
+            {isProcessing ? "Processing..." : "Checkout"}
           </button>
         </form>
       </div>
     </div>
   );
 };
+
+const Payment = () => (
+  <Elements stripe={stripePromise}>
+    <PaymentForm />
+  </Elements>
+);
 
 export default Payment;

@@ -128,6 +128,7 @@ function Login() {
             {isLogin ? (
               <div className="flip-card__front">
                 <div className="title">Log in</div>
+                <div className="title">click here to sign up</div>
                 <form className="flip-card__form" onSubmit={handleLogin}>
                   <input
                     className="flip-card__input"

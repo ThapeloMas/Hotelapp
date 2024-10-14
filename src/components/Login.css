@@ -96,6 +96,9 @@
 }
 
 /* card */ 
+.flip-card__front{
+
+}
 
 .flip-card__inner {
     margin-top: 200px;
@@ -120,6 +123,10 @@
 }
 
 .flip-card__front, .flip-card__back {
+  
+  
+   max-width: 1080px;
+  margin:  20px auto;
   padding: 20px;
   position: absolute;
   display: flex;
@@ -132,6 +139,7 @@
   border-radius: 5px;
   border: 2px solid var(--main-color);
   box-shadow: 4px 4px var(--main-color);
+
 }
 
 .flip-card__back {

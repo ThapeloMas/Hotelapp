@@ -3,6 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig"; // Firestore instance
 import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 import "./RoomCardsPage.css"; // Import your CSS file
+import SearchBar from "./SearchBar";
 
 function RoomCardsPage() {
   const [rooms, setRooms] = useState([]);
@@ -33,6 +34,7 @@ function RoomCardsPage() {
 
   return (
     <div>
+    <SearchBar></SearchBar>
       <h2>Available Hotels</h2>
       <div className="room-section">
         {rooms.map((room) => (

@@ -1,15 +1,23 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addRoom } from "../store/roomSlice";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig"; // Import Firestore instance
-import "./AdminDashboard.css"; // Make sure to import your CSS file
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import "./AdminDashboard.css";
 
 function AdminDashboard() {
   const [roomNumber, setRoomNumber] = useState("");
   const [price, setPrice] = useState("");
   const [location, setLocation] = useState("");
   const [photos, setPhotos] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [editRoomId, setEditRoomId] = useState(null);
   const dispatch = useDispatch();
 
   const handleAddRoom = async () => {
@@ -18,29 +26,19 @@ function AdminDashboard() {
         roomNumber,
         price,
         location,
-        photos, // Photos are already in Base64 format
+        photos,
       };
 
       try {
-        // Save room data to Firestore
         const docRef = await addDoc(collection(db, "rooms"), newRoom);
-        console.log("Room added with ID: ", docRef.id);
-
-        // Dispatch the room to the Redux store
         dispatch(addRoom(newRoom));
-
-        // Clear form fields
+        setRooms([...rooms, { ...newRoom, id: docRef.id }]);
         setRoomNumber("");
         setPrice("");
         setLocation("");
         setPhotos([]);
-
-        // Show success alert
         alert("Room added successfully!");
       } catch (e) {
-        console.error("Error adding document: ", e);
-
-        // Show error alert
         alert("There was an error adding the room. Please try again.");
       }
     } else {
@@ -52,49 +50,121 @@ function AdminDashboard() {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setPhotos([...photos, reader.result]); // Base64 format
+      setPhotos([...photos, reader.result]);
     };
     reader.readAsDataURL(file);
   };
 
+  const handleDeleteRoom = async (roomId) => {
+    try {
+      await deleteDoc(doc(db, "rooms", roomId));
+      setRooms(rooms.filter((room) => room.id !== roomId));
+      alert("Room deleted successfully!");
+    } catch {
+      alert("There was an error deleting the room.");
+    }
+  };
+
+  const handleEditRoom = (room) => {
+    setEditRoomId(room.id);
+    setRoomNumber(room.roomNumber);
+    setPrice(room.price);
+    setLocation(room.location);
+    setPhotos(room.photos);
+  };
+
+  const handleUpdateRoom = async () => {
+    const updatedRoom = {
+      roomNumber,
+      price,
+      location,
+      photos,
+    };
+
+    try {
+      const roomDoc = doc(db, "rooms", editRoomId);
+      await updateDoc(roomDoc, updatedRoom);
+      setRooms(
+        rooms.map((room) =>
+          room.id === editRoomId ? { ...updatedRoom, id: editRoomId } : room
+        )
+      );
+      alert("Room updated successfully!");
+      setEditRoomId(null);
+      setRoomNumber("");
+      setPrice("");
+      setLocation("");
+      setPhotos([]);
+    } catch {
+      alert("There was an error updating the room.");
+    }
+  };
+
   return (
-    <div>
-      <h2>Add New Room</h2>
+    <div className="admin-dashboard">
+      <h2 className="card__title">Add New Room</h2>
       <div className="room-section">
-        <div className="room-card">
+        <div className="room-card card">
           <div className="room-photos">
             {photos.length > 0 && (
               <img src={photos[0]} alt="Room" className="room-image" />
             )}
           </div>
-          <label>Room Number</label>
-          <input
-            type="text"
-            value={roomNumber}
-            onChange={(e) => setRoomNumber(e.target.value)}
-          />
-          <label>Price</label>
-          <input
-            type="text"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-          <br></br>
-          <label>Location</label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-          <br>
-          
-          </br>
-          <label>Photos</label>
-          <input type="file" onChange={handlePhotoUpload} />
-          <button className="book-now-btn" onClick={handleAddRoom}>
-            Add Room
-          </button>
+          <div className="card__form">
+            <label>Room Number:</label>
+            <input
+              type="text"
+              value={roomNumber}
+              onChange={(e) => setRoomNumber(e.target.value)}
+            />
+            <label>Price:</label>
+            <input
+              type="text"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+            <label>Location:</label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+            <label>Photos:</label>
+            <input type="file" onChange={handlePhotoUpload} />
+            {editRoomId ? (
+              <button className="sign-up" onClick={handleUpdateRoom}>
+                Update Room
+              </button>
+            ) : (
+              <button className="sign-up" onClick={handleAddRoom}>
+                Add Room
+              </button>
+            )}
+          </div>
         </div>
+      </div>
+
+      <h3 className="card__title">Available Rooms</h3>
+      <div className="available-rooms">
+        {rooms.map((room) => (
+          <div key={room.id} className="room-card card">
+            <div className="room-photos">
+              <img src={room.photos[0]} alt="Room" className="room-image" />
+            </div>
+            <p>Room Number: {room.roomNumber}</p>
+            <p>Price: {room.price}</p>
+            <p>Location: {room.location}</p>
+            <button className="sign-up" onClick={() => handleEditRoom(room)}>
+              Edit
+            </button>
+            <button
+              className="sign-up"
+              onClick={() => handleDeleteRoom(room.id)}
+            >
+              Delete
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
