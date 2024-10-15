@@ -17,7 +17,7 @@ import AdminRoute from "./components/AdminRoute";
 import { useAuth } from "./components/UseAuth";
 import Logout from "./components/Logout";
 import UserProfile from "./components/UserProfile"; // Import the UserProfile component
-
+import Navbar from "./components/Navbar";
 // PrivateRoute component to check authentication
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -51,6 +51,9 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
+        <React.Fragment>
+          <Navbar />
+        </React.Fragment>
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />

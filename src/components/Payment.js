@@ -11,7 +11,7 @@ import "./Payment.css";
 
 // Load your Stripe publishable key
 const stripePromise = loadStripe(
-  ''
+  'pk_test_51Q9ih1RuIWNyWIUihRX8W86PxHIYUxOfPoJ4KQubbplNkx6uljtZQHAMATIRVx6sOciRKO8W42Lwsr2dapCIZ5el00xFTr7iub'
 );
 
 const PaymentForm = () => {

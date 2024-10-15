@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, setDoc } from "firebase/firestore"; // Import Firestore methods for fetching and saving user data
 import "./Login.css";
+import vid from "../images/mixkit-sunset-on-a-beach-seen-from-a-terrace-44500-full-hd.mp4";
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -115,6 +116,12 @@ function Login() {
 
   return (
     <div className="wrapper">
+      {/* Video background */}
+      <video autoPlay loop muted className="background-video">
+        <source src={vid} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
       <div className="card-switch">
         <label className="switch">
           <input
@@ -151,7 +158,10 @@ function Login() {
                   </button>
                   {error && <p className="error-message">{error}</p>}
 
-                  <button onClick={handlePasswordReset}>
+                  <button
+                    className="flip-card__input"
+                    onClick={handlePasswordReset}
+                  >
                     Forgot Password?
                   </button>
                   {resetEmailSent && <p>Password reset email sent!</p>}

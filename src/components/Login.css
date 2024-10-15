@@ -1,4 +1,4 @@
- 
+
 .wrapper {
   --input-focus: #2d8cf0;
   --font-color: #323232;
@@ -97,13 +97,17 @@
 
 /* card */ 
 .flip-card__front{
+  margin-left: 0px;
+    margin-top: 200px;
+width: 400px;
+  height: 650px;
 
 }
 
 .flip-card__inner {
     margin-top: 200px;
-  width: 300px;
-  height: 350px;
+  width: 400px;
+  height: 450px;
   position: relative;
   background-color: transparent;
   perspective: 1000px;
@@ -112,6 +116,7 @@
   text-align: center;
   transition: transform 0.8s;
   transform-style: preserve-3d;
+  
 }
 
 .toggle:checked ~ .flip-card__inner {
@@ -127,6 +132,7 @@
   
    max-width: 1080px;
   margin:  20px auto;
+  margin-left: 50px;
   padding: 20px;
   position: absolute;
   display: flex;
@@ -134,11 +140,13 @@
   justify-content: center;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  background: lightgrey;
-  gap: 20px;
-  border-radius: 5px;
-  border: 2px solid var(--main-color);
-  box-shadow: 4px 4px var(--main-color);
+  
+background: rgba(255, 255, 255, 0.2);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(0.6px);
+-webkit-backdrop-filter: blur(0.6px);
+border: 1px solid rgba(255, 255, 255, 0.3);
 
 }
 
@@ -159,7 +167,7 @@
   font-size: 25px;
   font-weight: 900;
   text-align: center;
-  color: var(--main-color);
+  color: white;
 }
 
 .flip-card__input {
@@ -203,3 +211,24 @@
   color: var(--font-color);
   cursor: pointer;
 } 
+
+
+ .background-video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: auto;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  z-index: -1;
+}
+
+
+
+.wrapper {
+  position: relative;
+  z-index: 1; /* Ensure the content stays above the video */
+}
