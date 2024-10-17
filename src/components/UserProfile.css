@@ -1,6 +1,7 @@
 .user-profile {
   position: relative;
   display: inline-block;
+  
 }
 
 .profile-toggle {
@@ -11,6 +12,9 @@
   border-radius: 20px;
   background-color: #f0f0f0;
   transition: background-color 0.3s ease;
+   width: 100px;
+  height: 50px;
+
 }
 
 .profile-toggle:hover {
