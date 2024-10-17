@@ -42,7 +42,7 @@ const UserProfile = () => {
   return (
     <div className="user-profile">
       <div className="profile-toggle" onClick={toggleProfile}>
-        {user && (
+        {user ? (
           <>
             <img
               src={user.profilePicture}
@@ -51,9 +51,11 @@ const UserProfile = () => {
             />
             <span>{user.name}</span>
           </>
+        ) : (
+          <span>Loading...</span>
         )}
       </div>
-      {isOpen && (
+      {isOpen && user && (
         <div className="profile-dropdown">
           <h3>{user.name}</h3>
           <p>Email: {user.email}</p>

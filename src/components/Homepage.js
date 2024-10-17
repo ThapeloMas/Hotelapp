@@ -1,5 +1,5 @@
+// Homepage.js
 import React, { useState, useEffect } from "react";
-import { Link as ScrollLink } from "react-scroll";
 import { Link } from "react-router-dom";
 import "./Homepage.css";
 import hotelpic from "../hoteland.jpg";
@@ -9,15 +9,22 @@ import gpic3 from "../images/2H.jpg";
 import heroImg1 from "../images/pexels-pixabay-276671.jpg";
 import heroImg2 from "../images/2B.jpg";
 import heroImg3 from "../images/1H.jpg";
+import Loading from "./Loading"; // Import the Loading component
 
 const Homepage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loading, setLoading] = useState(true); // Add loading state
   const images = [heroImg1, heroImg2, heroImg3];
 
   const galleryImages = [gpic, gpic2, gpic3];
   const [galleryImageIndex, setGalleryImageIndex] = useState(0);
 
   useEffect(() => {
+    // Simulate a delay to showcase the loading effect
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
     }, 3000);
@@ -36,9 +43,13 @@ const Homepage = () => {
     );
   };
 
+  // If loading is true, show the Loading component
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="homepage">
-      
       <section
         className="hero"
         style={{ backgroundImage: `url(${images[currentImageIndex]})` }}
@@ -46,7 +57,7 @@ const Homepage = () => {
         <div className="hero-text">
           <h2>
             Welcome to your perfect stay! Discover a world of{" "}
-            <span className="highlight">comfort and luxury</span> at our hotel,
+            <span className="highlight">comfort and luxury</span> at our hotel.
           </h2>
           <p>
             Whether you're here for business or leisure, we promise a stay that
@@ -55,7 +66,7 @@ const Homepage = () => {
           </p>
           <Link to="/rooms">
             <button className="book-now-btn">Book Now</button>
-          </Link>{" "}
+          </Link>
         </div>
       </section>
 
@@ -79,7 +90,7 @@ const Homepage = () => {
 
       <section className="amenities">
         <div className="icons">
-          <img src={hotelpic} alt="Icon 1" />
+          <img src={hotelpic} alt="Hotel Icon" />
         </div>
         <div className="description">
           <p>
@@ -96,7 +107,7 @@ const Homepage = () => {
       <footer className="footer">
         <div className="footer-links">
           <div>
-            <h4>Contact US</h4>
+            <h4>Contact Us</h4>
             <ul>
               <li>011 345 4456</li>
               <li>helpline@malapeng.co.za</li>

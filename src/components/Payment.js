@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -11,11 +11,12 @@ import "./Payment.css";
 
 // Load your Stripe publishable key
 const stripePromise = loadStripe(
-  'pk_test_51Q9ih1RuIWNyWIUihRX8W86PxHIYUxOfPoJ4KQubbplNkx6uljtZQHAMATIRVx6sOciRKO8W42Lwsr2dapCIZ5el00xFTr7iub'
+  "pk_test_51Q9ih1RuIWNyWIUihRX8W86PxHIYUxOfPoJ4KQubbplNkx6uljtZQHAMATIRVx6sOciRKO8W42Lwsr2dapCIZ5el00xFTr7iub"
 );
 
 const PaymentForm = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
   const { roomNumber, price, numDays } = location.state || {};
@@ -49,10 +50,11 @@ const PaymentForm = () => {
     if (error) {
       setErrorMessage(error.message);
       setIsProcessing(false);
+      navigate("/payment-failure");
     } else {
       // Here you would typically call your backend to create a payment intent and confirm the payment
-      // For demonstration purposes, we're showing a success message
-      alert("Booking successful!");
+      // For demonstration purposes, we navigate to the success page
+      navigate("/payment-success");
       setIsProcessing(false);
     }
   };

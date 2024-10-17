@@ -18,7 +18,14 @@ import { useAuth } from "./components/UseAuth";
 import Logout from "./components/Logout";
 import UserProfile from "./components/UserProfile"; // Import the UserProfile component
 import Navbar from "./components/Navbar";
+import PaymentSuccess from "./components/PaymentSuccess";
+import PaymentFailure from "./components/PaymentFailure";
 // PrivateRoute component to check authentication
+
+
+  
+
+
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
@@ -31,6 +38,8 @@ const PrivateRoute = ({ children }) => {
   }
 
   return (
+
+     
     <div>
       <div
         style={{
@@ -83,6 +92,8 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failure" element={<PaymentFailure />} />
 
           {/* Admin route */}
           <Route

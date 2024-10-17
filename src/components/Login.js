@@ -9,8 +9,14 @@ import { useNavigate } from "react-router-dom";
 import { doc, getDoc, setDoc } from "firebase/firestore"; // Import Firestore methods for fetching and saving user data
 import "./Login.css";
 import vid from "../images/mixkit-sunset-on-a-beach-seen-from-a-terrace-44500-full-hd.mp4";
+import Loading from "./Loading";
+
+
+
 
 function Login() {
+
+
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,6 +25,11 @@ function Login() {
   const [profilePicture, setProfilePicture] = useState(""); // State for profile picture
   const [error, setError] = useState("");
   const navigate = useNavigate();
+   const [loading, setLoading] = useState(true);
+
+
+
+
 
   const getUserRole = async (uid) => {
     const userDoc = await getDoc(doc(db, "users", uid));
@@ -27,6 +38,7 @@ function Login() {
     }
     return null;
   };
+
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -52,6 +64,11 @@ function Login() {
     } catch (error) {
       setError(getErrorMessage(error));
     }
+
+  
+
+
+
   };
 
   const handleLogin = async (e) => {
