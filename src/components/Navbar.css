@@ -5,6 +5,7 @@
 	margin: 0;
 	box-sizing: border-box;
 	font-family: "Titillium Web", sans-serif;
+	
 }
 
 :root {
@@ -22,8 +23,9 @@ header {
 	padding: 0 2rem;
 	background-color: white;
 	color: var(--textColor);
+	
+	
 }
-
 nav a {
 	margin: 0 1rem;
 	color: var(--textColor);
@@ -81,6 +83,7 @@ nav {
 		position: absolute;
 		top: 2rem;
 		right: 2rem;
+		color: white;
 	}
 
 	nav a {

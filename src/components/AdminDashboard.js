@@ -19,8 +19,10 @@ function AdminDashboard() {
   const [photos, setPhotos] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [editRoomId, setEditRoomId] = useState(null);
+  const [bookedRooms, setBookedRooms] = useState([]);
   const dispatch = useDispatch();
 
+  // Fetch available rooms
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -36,6 +38,37 @@ function AdminDashboard() {
     };
 
     fetchRooms();
+  }, []);
+
+  // Fetch all user bookings (admin view)
+  useEffect(() => {
+    const fetchAllBookings = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const allBookings = [];
+
+        for (const userDoc of querySnapshot.docs) {
+          const userData = userDoc.data();
+          if (userData.bookings && userData.bookings.length > 0) {
+            userData.bookings.forEach((booking) => {
+              allBookings.push({
+                ...booking,
+                status: booking.status || "pending", // Default status to "pending"
+                userName: userData.name,
+                userEmail: userData.email,
+                userId: userDoc.id, // Store user ID for later use
+              });
+            });
+          }
+        }
+
+        setBookedRooms(allBookings);
+      } catch (e) {
+        alert("Error fetching bookings. Please try again.");
+      }
+    };
+
+    fetchAllBookings();
   }, []);
 
   const handleAddRoom = async () => {
@@ -118,6 +151,42 @@ function AdminDashboard() {
     }
   };
 
+  const handleApproveBooking = async (booking) => {
+    try {
+      const userRef = doc(db, "users", booking.userId);
+      const updatedBookings = bookedRooms.map((b) =>
+        b.roomNumber === booking.roomNumber ? { ...b, status: "approved" } : b
+      );
+
+      // Update booking status in Firestore
+      await updateDoc(userRef, { bookings: updatedBookings });
+
+      // Update state locally
+      setBookedRooms(updatedBookings);
+      alert("Booking approved successfully!");
+    } catch (e) {
+      alert("Error approving booking. Please try again.");
+    }
+  };
+
+  const handleRejectBooking = async (booking) => {
+    try {
+      const userRef = doc(db, "users", booking.userId);
+      const updatedBookings = bookedRooms.map((b) =>
+        b.roomNumber === booking.roomNumber ? { ...b, status: "rejected" } : b
+      );
+
+      // Update booking status in Firestore
+      await updateDoc(userRef, { bookings: updatedBookings });
+
+      // Update state locally
+      setBookedRooms(updatedBookings);
+      alert("Booking rejected successfully!");
+    } catch (e) {
+      alert("Error rejecting booking. Please try again.");
+    }
+  };
+
   return (
     <div className="admin-dashboard">
       <h2 className="add-room-title">Add New Room</h2>
@@ -189,6 +258,55 @@ function AdminDashboard() {
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Booked Rooms Section */}
+      <h3 className="booked-rooms-title">Booked Rooms</h3>
+      <div className="booked-rooms">
+        {bookedRooms.length > 0 ? (
+          bookedRooms.map((booking, index) => (
+            <div key={index} className="booked-room-card">
+              <h4>Room Number: {booking.roomNumber}</h4>
+              <p>User: {booking.userName}</p>
+              <p>Email: {booking.userEmail}</p>
+              <p>
+                Check-in:{" "}
+                {new Date(
+                  booking.checkInDate.seconds * 1000
+                ).toLocaleDateString()}
+              </p>
+              <p>
+                Check-out:{" "}
+                {new Date(
+                  booking.checkOutDate.seconds * 1000
+                ).toLocaleDateString()}
+              </p>
+              <p>Total Cost: R{booking.totalPrice}</p>
+
+              {/* Approve and Reject Buttons */}
+              {booking.status === "pending" && (
+                <div className="booking-actions">
+                  <button
+                    className="add-room-button"
+                    onClick={() => handleApproveBooking(booking)}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="add-room-button"
+                    onClick={() => handleRejectBooking(booking)}
+                  >
+                    Reject
+                  </button>
+                </div>
+              )}
+              {booking.status === "approved" && <p>Status: Approved</p>}
+              {booking.status === "rejected" && <p>Status: Rejected</p>}
+            </div>
+          ))
+        ) : (
+          <p>No rooms booked yet.</p>
+        )}
       </div>
     </div>
   );

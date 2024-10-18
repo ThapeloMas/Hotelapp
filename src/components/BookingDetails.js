@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -13,17 +12,18 @@ function BookingDetails() {
   const { room } = location.state || {};
 
   const handleBooking = () => {
-    // Calculate number of days between check-in and check-out
     const numDays = Math.ceil(
       (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
     );
 
-    // Navigate to Payment page and pass necessary data
+    // Navigate to Payment page and pass the room details, check-in, and check-out dates
     navigate("/payment", {
       state: {
         roomNumber: room.roomNumber,
         price: room.price,
         numDays,
+        checkInDate, // Pass check-in date
+        checkOutDate, // Pass check-out date
       },
     });
   };

@@ -7,6 +7,8 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { auth, db } from "../firebaseConfig";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore"; // Firestore imports
 import "./Payment.css";
 
 // Load your Stripe publishable key
@@ -19,7 +21,8 @@ const PaymentForm = () => {
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
-  const { roomNumber, price, numDays } = location.state || {};
+  const { roomNumber, price, numDays, checkInDate, checkOutDate } =
+    location.state || {};
 
   // Calculate the total price
   const totalPrice = numDays * price;
@@ -52,10 +55,28 @@ const PaymentForm = () => {
       setIsProcessing(false);
       navigate("/payment-failure");
     } else {
-      // Here you would typically call your backend to create a payment intent and confirm the payment
-      // For demonstration purposes, we navigate to the success page
-      navigate("/payment-success");
-      setIsProcessing(false);
+      try {
+        // Save the booking data in Firestore
+        const bookingDetails = {
+          roomNumber,
+          checkInDate, // Store check-in date
+          checkOutDate, // Store check-out date
+          totalPrice, // Store total price
+        };
+
+        // Update Firestore with the new booking details
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(userRef, {
+          bookings: arrayUnion(bookingDetails), // Append new booking to the user's bookings array
+        });
+
+        // Navigate to the success page
+        navigate("/payment-success");
+      } catch (err) {
+        console.error("Error saving booking: ", err);
+        setErrorMessage("Failed to save booking. Please try again.");
+        setIsProcessing(false);
+      }
     }
   };
 

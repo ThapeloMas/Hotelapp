@@ -22,11 +22,9 @@ const UserProfile = () => {
 
     const fetchBookedRooms = async () => {
       if (auth.currentUser) {
-        const bookingsDoc = await getDoc(
-          doc(db, "bookings", auth.currentUser.uid)
-        );
-        if (bookingsDoc.exists()) {
-          setBookedRooms(bookingsDoc.data().rooms || []);
+        const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+        if (userDoc.exists()) {
+          setBookedRooms(userDoc.data().bookings || []); // Fetch bookings array
         }
       }
     };
@@ -52,22 +50,34 @@ const UserProfile = () => {
             <span>{user.name}</span>
           </>
         ) : (
-          <span>Loading...</span>
+          <span>Profile</span>
         )}
       </div>
-      {isOpen && user && (
-        <div className="profile-dropdown">
-          <h3>{user.name}</h3>
-          <p>Email: {user.email}</p>
-          <h4>Booked Rooms:</h4>
+
+      {isOpen && (
+        <div className="profile-details">
+          <h2>{user?.name}</h2>
+          <p>Email: {user?.email}</p>
+
+          <h3>Booked Rooms</h3>
           <ul>
             {bookedRooms.map((room, index) => (
-              <li key={index}>Room {room.roomNumber}</li>
+              <li key={index}>
+                Room {room.roomNumber} <br />
+                Check-in:{" "}
+                {new Date(
+                  room.checkInDate.seconds * 1000
+                ).toLocaleDateString()}{" "}
+                <br />
+                Check-out:{" "}
+                {new Date(
+                  room.checkOutDate.seconds * 1000
+                ).toLocaleDateString()}{" "}
+                <br />
+                Total Cost: R{room.totalPrice}
+              </li>
             ))}
           </ul>
-          <button onClick={() => navigate("/profile")}>
-            View Full Profile
-          </button>
         </div>
       )}
     </div>
