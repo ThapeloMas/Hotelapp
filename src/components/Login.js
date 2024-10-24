@@ -25,7 +25,7 @@ function Login() {
   const [profilePicture, setProfilePicture] = useState(""); // State for profile picture
   const [error, setError] = useState("");
   const navigate = useNavigate();
-   const [loading, setLoading] = useState(true);
+
 
 
 
@@ -50,12 +50,12 @@ function Login() {
       );
       console.log("User registered:", userCredential.user);
 
-      // Save user info to Firestore, including profile picture
+      
       await setDoc(doc(db, "users", userCredential.user.uid), {
         name,
         email,
-        profilePicture, // Save base64 image
-        role: "user", // Set default role
+        profilePicture, 
+        role: "user", 
       });
 
       const userRole = await getUserRole(userCredential.user.uid);
@@ -83,7 +83,7 @@ function Login() {
 
       const userRole = await getUserRole(userCredential.user.uid);
       console.log("User Role:", userRole);
-      navigate(userRole === "admin" ? "/admin" : "/rooms");
+      navigate(userRole === "admin" ? "/admin" : "/bookingdetails");
       setError("");
     } catch (error) {
       setError(getErrorMessage(error));

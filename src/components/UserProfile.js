@@ -1,36 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
 import "./UserProfile.css";
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [bookedRooms, setBookedRooms] = useState([]);
+  const [favoriteRooms, setFavoriteRooms] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (auth.currentUser) {
+        // Fetch user details from the 'users' collection
         const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
         if (userDoc.exists()) {
           setUser(userDoc.data());
         }
-      }
-    };
 
-    const fetchBookedRooms = async () => {
-      if (auth.currentUser) {
-        const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-        if (userDoc.exists()) {
-          setBookedRooms(userDoc.data().bookings || []); // Fetch bookings array
+        // Fetch booked rooms data from the 'booked' collection
+        const bookedDoc = await getDoc(doc(db, "booked", auth.currentUser.uid));
+        if (bookedDoc.exists()) {
+          setBookedRooms(bookedDoc.data().bookings || []);
         }
       }
     };
 
     fetchUserData();
-    fetchBookedRooms();
   }, []);
 
   const toggleProfile = () => {
@@ -75,6 +71,16 @@ const UserProfile = () => {
                 ).toLocaleDateString()}{" "}
                 <br />
                 Total Cost: R{room.totalPrice}
+              </li>
+            ))}
+          </ul>
+
+          <h3>Favorite Rooms</h3>
+          <ul>
+            {favoriteRooms.map((room, index) => (
+              <li key={index}>
+                Room {room.roomNumber} in {room.location} <br />
+                Price: R{room.price}
               </li>
             ))}
           </ul>

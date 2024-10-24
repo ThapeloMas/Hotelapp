@@ -10,11 +10,15 @@ import {
 } from "../features/searchSlice";
 import "./SearchBar.css";
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => {
   const dispatch = useDispatch();
   const { location, checkInDate, checkOutDate, guests } = useSelector(
     (state) => state.search
   );
+
+  const handleSearchClick = () => {
+    onSearch({ location, checkInDate, checkOutDate, guests });
+  };
 
   return (
     <div className="search-bar">
@@ -44,9 +48,12 @@ const SearchBar = () => {
         onChange={(e) => dispatch(setGuests(e.target.value))}
         className="guest-room-input"
       />
-      <button className="search-button">Search</button>
+      <button className="search-button" onClick={handleSearchClick}>
+        Search
+      </button>
     </div>
   );
 };
 
 export default SearchBar;
+

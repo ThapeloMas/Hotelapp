@@ -67,15 +67,9 @@ function App() {
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
 
+          <Route path="/rooms" element={<RoomCardsPage />} />
           {/* Protected routes */}
-          <Route
-            path="/rooms"
-            element={
-              <PrivateRoute>
-                <RoomCardsPage />
-              </PrivateRoute>
-            }
-          />
+          
           <Route
             path="/payment"
             element={
@@ -85,7 +79,7 @@ function App() {
             }
           />
           <Route
-            path="/bookingdetails"
+            path="/bookingdetails/:id"
             element={
               <PrivateRoute>
                 <BookingDetails />

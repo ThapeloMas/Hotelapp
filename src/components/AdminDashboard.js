@@ -187,6 +187,29 @@ function AdminDashboard() {
     }
   };
 
+  const handleDeleteBooking = async (booking) => {
+    try {
+      const userRef = doc(db, "users", booking.userId);
+      const updatedBookings = bookedRooms.filter(
+        (b) => b.roomNumber !== booking.roomNumber
+      );
+
+      // Update Firestore to remove the booking
+      await updateDoc(userRef, { bookings: updatedBookings });
+
+      // Update local state
+      setBookedRooms(updatedBookings);
+      alert("Booking deleted successfully!");
+    } catch (e) {
+      alert("Error deleting booking. Please try again.");
+    }
+  };
+
+  const handleEditBooking = (booking) => {
+    // This function could show a modal or form to allow editing the booking details
+    alert("Edit functionality coming soon!"); // Placeholder for future edit functionality
+  };
+
   return (
     <div className="admin-dashboard">
       <h2 className="add-room-title">Add New Room</h2>
@@ -260,50 +283,75 @@ function AdminDashboard() {
         ))}
       </div>
 
-      {/* Booked Rooms Section */}
+      {/* Booked Rooms Table */}
       <h3 className="booked-rooms-title">Booked Rooms</h3>
       <div className="booked-rooms">
         {bookedRooms.length > 0 ? (
-          bookedRooms.map((booking, index) => (
-            <div key={index} className="booked-room-card">
-              <h4>Room Number: {booking.roomNumber}</h4>
-              <p>User: {booking.userName}</p>
-              <p>Email: {booking.userEmail}</p>
-              <p>
-                Check-in:{" "}
-                {new Date(
-                  booking.checkInDate.seconds * 1000
-                ).toLocaleDateString()}
-              </p>
-              <p>
-                Check-out:{" "}
-                {new Date(
-                  booking.checkOutDate.seconds * 1000
-                ).toLocaleDateString()}
-              </p>
-              <p>Total Cost: R{booking.totalPrice}</p>
-
-              {/* Approve and Reject Buttons */}
-              {booking.status === "pending" && (
-                <div className="booking-actions">
-                  <button
-                    className="add-room-button"
-                    onClick={() => handleApproveBooking(booking)}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="add-room-button"
-                    onClick={() => handleRejectBooking(booking)}
-                  >
-                    Reject
-                  </button>
-                </div>
-              )}
-              {booking.status === "approved" && <p>Status: Approved</p>}
-              {booking.status === "rejected" && <p>Status: Rejected</p>}
-            </div>
-          ))
+          <table className="booked-rooms-table">
+            <thead>
+              <tr>
+                <th>Room Number</th>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Check-in Date</th>
+                <th>Check-out Date</th>
+                <th>Total Cost</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookedRooms.map((booking, index) => (
+                <tr key={index}>
+                  <td>{booking.roomNumber}</td>
+                  <td>{booking.userName}</td>
+                  <td>{booking.userEmail}</td>
+                  <td>
+                    {new Date(
+                      booking.checkInDate.seconds * 1000
+                    ).toLocaleDateString()}
+                  </td>
+                  <td>
+                    {new Date(
+                      booking.checkOutDate.seconds * 1000
+                    ).toLocaleDateString()}
+                  </td>
+                  <td>R{booking.totalPrice}</td>
+                  <td>{booking.status}</td>
+                  <td>
+                    {booking.status === "pending" && (
+                      <>
+                        <button
+                          className="action-button"
+                          onClick={() => handleApproveBooking(booking)}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          className="action-button"
+                          onClick={() => handleRejectBooking(booking)}
+                        >
+                          Reject
+                        </button>
+                        <button
+                          className="action-button"
+                          onClick={() => handleEditBooking(booking)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="action-button"
+                          onClick={() => handleDeleteBooking(booking)}
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <p>No rooms booked yet.</p>
         )}

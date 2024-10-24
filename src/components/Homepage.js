@@ -9,7 +9,11 @@ import gpic3 from "../images/2H.jpg";
 import heroImg1 from "../images/pexels-pixabay-276671.jpg";
 import heroImg2 from "../images/2B.jpg";
 import heroImg3 from "../images/1H.jpg";
-import Loading from "./Loading"; // Import the Loading component
+import Loading from "./Loading"; 
+import {
+  BiSolidRightArrowSquare,
+  BiSolidLeftArrowSquare,
+} from "react-icons/bi";
 
 const Homepage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -43,10 +47,22 @@ const Homepage = () => {
     );
   };
 
-  // If loading is true, show the Loading component
-  if (loading) {
-    return <Loading />;
-  }
+
+if (loading) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <Loading />
+    </div>
+  );
+}
+
 
   return (
     <div className="homepage">
@@ -74,7 +90,8 @@ const Homepage = () => {
         <h3>Gallery</h3>
         <div className="gallery">
           <button className="gallery-arrow" onClick={handlePrevImage}>
-            &lt;
+          
+            <BiSolidLeftArrowSquare color="pink" />
           </button>
           <div className="gallery-images">
             <img
@@ -83,7 +100,7 @@ const Homepage = () => {
             />
           </div>
           <button className="gallery-arrow" onClick={handleNextImage}>
-            &gt;
+            <BiSolidRightArrowSquare color="pink" />
           </button>
         </div>
       </section>

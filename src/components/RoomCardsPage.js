@@ -1,12 +1,21 @@
+
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebaseConfig"; // Firestore instance
-import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
-import "./RoomCardsPage.css"; // Import your CSS file
+import {
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import { db, auth } from "../firebaseConfig"; // Include auth for current user
+import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
+import "./RoomCardsPage.css";
+import { MdFavorite } from "react-icons/md";
 
 function RoomCardsPage() {
   const [rooms, setRooms] = useState([]);
+  const [filteredRooms, setFilteredRooms] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,16 +26,36 @@ function RoomCardsPage() {
         ...doc.data(),
       }));
       setRooms(roomList);
+      setFilteredRooms(roomList);
     };
 
     fetchRooms();
   }, []);
 
-  const handleBookNow = (room) => {
-    navigate("/bookingdetails", { state: { room } }); // Pass room data using navigate
+  const handleSearch = ({ location }) => {
+    const filtered = rooms.filter((room) =>
+      room.location.toLowerCase().includes(location.toLowerCase())
+    );
+    setFilteredRooms(filtered);
   };
 
-  if (rooms.length === 0) {
+  const handleBookNow = (room) => {
+    navigate("/bookingdetails/${room.id}", { state: { room } });
+  };
+
+  const handleAddToFavorites = async (room) => {
+    if (auth.currentUser) {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      await updateDoc(userRef, {
+        favorites: arrayUnion(room.id), // Add room ID to favorites
+      });
+      alert("Room added to favorites!");
+    } else {
+      alert("You need to be logged in to add favorites.");
+    }
+  };
+
+  if (filteredRooms.length === 0) {
     return (
       <p>No rooms available. Please add rooms from the admin dashboard.</p>
     );
@@ -34,15 +63,14 @@ function RoomCardsPage() {
 
   return (
     <div>
-    <SearchBar></SearchBar>
+      <SearchBar onSearch={handleSearch} />
       <h2>Available Hotels</h2>
       <div className="room-section">
-        {rooms.map((room) => (
+        {filteredRooms.map((room) => (
           <div key={room.id} className="room-card">
             <h3>Room {room.roomNumber}</h3>
             <p>Location: {room.location}</p>
             <p className="room-price">Price: R{room.price}</p>
-
             <div className="room-photos">
               {room.photos.map((photo, index) => (
                 <img
@@ -55,9 +83,16 @@ function RoomCardsPage() {
             </div>
             <button
               className="book-now-btn"
-              onClick={() => handleBookNow(room)} // Pass room object to handleBookNow
+              onClick={() => handleBookNow(room)}
             >
               Book Now
+            </button>
+            <button
+              className="book-now-btn"
+             
+              onClick={() => handleAddToFavorites(room)}
+            >
+              <MdFavorite color="red" />
             </button>
           </div>
         ))}

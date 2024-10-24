@@ -8,7 +8,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { auth, db } from "../firebaseConfig";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore"; // Firestore imports
+import { doc, updateDoc, setDoc, arrayUnion } from "firebase/firestore"; // Firestore imports
 import "./Payment.css";
 
 // Load your Stripe publishable key
@@ -64,8 +64,13 @@ const PaymentForm = () => {
           totalPrice, // Store total price
         };
 
+        // Reference to the user's booking document
+        const userRef = doc(db, "booked", auth.currentUser.uid);
+
+        // Ensure the document exists or create a new one if it doesn't
+        await setDoc(userRef, { bookings: [] }, { merge: true });
+
         // Update Firestore with the new booking details
-        const userRef = doc(db, "users", auth.currentUser.uid);
         await updateDoc(userRef, {
           bookings: arrayUnion(bookingDetails), // Append new booking to the user's bookings array
         });
