@@ -15,16 +15,11 @@ import BookingDetails from "./components/BookingDetails";
 import AdminDashboard from "./components/AdminDashboard";
 import AdminRoute from "./components/AdminRoute";
 import { useAuth } from "./components/UseAuth";
-import Logout from "./components/Logout";
-import UserProfile from "./components/UserProfile"; // Import the UserProfile component
 import Navbar from "./components/Navbar";
 import PaymentSuccess from "./components/PaymentSuccess";
 import PaymentFailure from "./components/PaymentFailure";
-// PrivateRoute component to check authentication
-
-
-  
-
+import UserProfile from "./components/UserProfile";
+import TermsAndConditions from "./components/TermsAndConditions";
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -37,23 +32,7 @@ const PrivateRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return (
-
-     
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "10px",
-        }}
-      >
-        <UserProfile /> {/* Add UserProfile component */}
-        <Logout />
-      </div>
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 };
 
 function App() {
@@ -66,10 +45,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
-
           <Route path="/rooms" element={<RoomCardsPage />} />
-          {/* Protected routes */}
-          
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditions />}
+          />
           <Route
             path="/payment"
             element={
@@ -88,8 +68,6 @@ function App() {
           />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failure" element={<PaymentFailure />} />
-
-          {/* Admin route */}
           <Route
             path="/admin"
             element={
@@ -98,8 +76,6 @@ function App() {
               </AdminRoute>
             }
           />
-
-          {/* Add a new route for the full profile page */}
           <Route
             path="/profile"
             element={

@@ -5,18 +5,13 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { doc, getDoc, setDoc } from "firebase/firestore"; // Import Firestore methods for fetching and saving user data
 import "./Login.css";
 import vid from "../images/mixkit-sunset-on-a-beach-seen-from-a-terrace-44500-full-hd.mp4";
 import Loading from "./Loading";
 
-
-
-
 function Login() {
-
-
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,12 +19,8 @@ function Login() {
   const [name, setName] = useState("");
   const [profilePicture, setProfilePicture] = useState(""); // State for profile picture
   const [error, setError] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false); // State for terms acceptance
   const navigate = useNavigate();
-
-
-
-
-
 
   const getUserRole = async (uid) => {
     const userDoc = await getDoc(doc(db, "users", uid));
@@ -38,7 +29,6 @@ function Login() {
     }
     return null;
   };
-
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -50,12 +40,11 @@ function Login() {
       );
       console.log("User registered:", userCredential.user);
 
-      
       await setDoc(doc(db, "users", userCredential.user.uid), {
         name,
         email,
-        profilePicture, 
-        role: "user", 
+        profilePicture,
+        role: "user",
       });
 
       const userRole = await getUserRole(userCredential.user.uid);
@@ -64,11 +53,6 @@ function Login() {
     } catch (error) {
       setError(getErrorMessage(error));
     }
-
-  
-
-
-
   };
 
   const handleLogin = async (e) => {
@@ -174,7 +158,6 @@ function Login() {
                     Let's go!
                   </button>
                   {error && <p className="error-message">{error}</p>}
-
                   <button
                     className="flip-card__input"
                     onClick={handlePasswordReset}
@@ -216,7 +199,24 @@ function Login() {
                     accept="image/*"
                     onChange={handleFileChange}
                   />
-                  <button className="flip-card__btn" type="submit">
+                  <div className="terms-acceptance">
+                    <input
+                      type="checkbox"
+                      checked={termsAccepted}
+                      onChange={() => setTermsAccepted(!termsAccepted)}
+                    />
+                    <label>
+                      I accept the{" "}
+                      <Link to="/terms-and-conditions" target="_blank">
+                        Terms and Conditions
+                      </Link>
+                    </label>
+                  </div>
+                  <button
+                    className="flip-card__btn"
+                    type="submit"
+                    disabled={!termsAccepted}
+                  >
                     Confirm!
                   </button>
                   {error && <p className="error-message">{error}</p>}

@@ -90,3 +90,25 @@ nav {
 		font-size: 1.5rem;
 	}
 }
+
+.auth-buttons {
+	display: flex;
+	align-items: center;
+}
+
+.profile-btn,
+.logout-btn {
+	padding: 0.5rem 1rem; /* Adjust padding as needed */
+	margin: 0 0.5rem; /* Space between buttons */
+	background-color: var(--mainColorLight);
+	color: white; /* Button text color */
+	border: none; /* Remove default border */
+	border-radius: 4px; /* Slightly rounded corners */
+	cursor: pointer; /* Pointer on hover */
+	transition: background-color 0.3s ease; /* Transition for hover effect */
+}
+
+.profile-btn:hover,
+.logout-btn:hover {
+	background-color: var(--secondaryColor); /* Change background color on hover */
+}

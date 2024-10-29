@@ -56,12 +56,15 @@ const PaymentForm = () => {
       navigate("/payment-failure");
     } else {
       try {
-        // Save the booking data in Firestore
+        // Save the booking data in Firestore with userID and roomID
         const bookingDetails = {
+          userID: auth.currentUser.uid, // Include userID
+          roomID: roomNumber, // Include roomID (assuming roomNumber serves as roomID)
           roomNumber,
           checkInDate, // Store check-in date
           checkOutDate, // Store check-out date
           totalPrice, // Store total price
+          userEmail: auth.currentUser.email, // Include user email
         };
 
         // Reference to the user's booking document

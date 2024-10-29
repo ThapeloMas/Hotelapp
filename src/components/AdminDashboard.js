@@ -9,7 +9,7 @@ import {
   updateDoc,
   getDocs,
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db } from "../firebaseConfig"; // Adjust path as necessary
 import "./AdminDashboard.css";
 
 function AdminDashboard() {
@@ -20,6 +20,7 @@ function AdminDashboard() {
   const [rooms, setRooms] = useState([]);
   const [editRoomId, setEditRoomId] = useState(null);
   const [bookedRooms, setBookedRooms] = useState([]);
+  const [currentView, setCurrentView] = useState("addRoom"); // new state for view management
   const dispatch = useDispatch();
 
   // Fetch available rooms
@@ -36,7 +37,6 @@ function AdminDashboard() {
         alert("Error fetching rooms. Please try again.");
       }
     };
-
     fetchRooms();
   }, []);
 
@@ -44,24 +44,25 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchAllBookings = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "users"));
+        const bookedCollection = await getDocs(collection(db, "booked"));
         const allBookings = [];
 
-        for (const userDoc of querySnapshot.docs) {
-          const userData = userDoc.data();
-          if (userData.bookings && userData.bookings.length > 0) {
-            userData.bookings.forEach((booking) => {
-              allBookings.push({
-                ...booking,
-                status: booking.status || "pending", // Default status to "pending"
-                userName: userData.name,
-                userEmail: userData.email,
-                userId: userDoc.id, // Store user ID for later use
-              });
+        for (const docSnapshot of bookedCollection.docs) {
+          const userBookings = docSnapshot.data().bookings || [];
+          const userId = docSnapshot.id;
+
+          for (const booking of userBookings) {
+            allBookings.push({
+              roomNumber: booking.roomNumber,
+              checkInDate: booking.checkInDate,
+              checkOutDate: booking.checkOutDate,
+              totalPrice: booking.totalPrice,
+              userId,
+              userEmail: booking.userEmail || "",
+              status: booking.status || "pending",
             });
           }
         }
-
         setBookedRooms(allBookings);
       } catch (e) {
         alert("Error fetching bookings. Please try again.");
@@ -73,13 +74,7 @@ function AdminDashboard() {
 
   const handleAddRoom = async () => {
     if (roomNumber && price && location && photos.length > 0) {
-      const newRoom = {
-        roomNumber,
-        price,
-        location,
-        photos,
-      };
-
+      const newRoom = { roomNumber, price, location, photos };
       try {
         const docRef = await addDoc(collection(db, "rooms"), newRoom);
         dispatch(addRoom(newRoom));
@@ -125,13 +120,7 @@ function AdminDashboard() {
   };
 
   const handleUpdateRoom = async () => {
-    const updatedRoom = {
-      roomNumber,
-      price,
-      location,
-      photos,
-    };
-
+    const updatedRoom = { roomNumber, price, location, photos };
     try {
       const roomDoc = doc(db, "rooms", editRoomId);
       await updateDoc(roomDoc, updatedRoom);
@@ -151,17 +140,15 @@ function AdminDashboard() {
     }
   };
 
+  // Handlers for booking actions
   const handleApproveBooking = async (booking) => {
     try {
-      const userRef = doc(db, "users", booking.userId);
+      const userRef = doc(db, "booked", booking.userId);
       const updatedBookings = bookedRooms.map((b) =>
         b.roomNumber === booking.roomNumber ? { ...b, status: "approved" } : b
       );
 
-      // Update booking status in Firestore
       await updateDoc(userRef, { bookings: updatedBookings });
-
-      // Update state locally
       setBookedRooms(updatedBookings);
       alert("Booking approved successfully!");
     } catch (e) {
@@ -171,15 +158,12 @@ function AdminDashboard() {
 
   const handleRejectBooking = async (booking) => {
     try {
-      const userRef = doc(db, "users", booking.userId);
+      const userRef = doc(db, "booked", booking.userId);
       const updatedBookings = bookedRooms.map((b) =>
         b.roomNumber === booking.roomNumber ? { ...b, status: "rejected" } : b
       );
 
-      // Update booking status in Firestore
       await updateDoc(userRef, { bookings: updatedBookings });
-
-      // Update state locally
       setBookedRooms(updatedBookings);
       alert("Booking rejected successfully!");
     } catch (e) {
@@ -189,15 +173,12 @@ function AdminDashboard() {
 
   const handleDeleteBooking = async (booking) => {
     try {
-      const userRef = doc(db, "users", booking.userId);
+      const userRef = doc(db, "booked", booking.userId);
       const updatedBookings = bookedRooms.filter(
         (b) => b.roomNumber !== booking.roomNumber
       );
 
-      // Update Firestore to remove the booking
       await updateDoc(userRef, { bookings: updatedBookings });
-
-      // Update local state
       setBookedRooms(updatedBookings);
       alert("Booking deleted successfully!");
     } catch (e) {
@@ -206,15 +187,25 @@ function AdminDashboard() {
   };
 
   const handleEditBooking = (booking) => {
-    // This function could show a modal or form to allow editing the booking details
-    alert("Edit functionality coming soon!"); // Placeholder for future edit functionality
+    alert("Edit functionality coming soon!");
   };
 
   return (
     <div className="admin-dashboard">
-      <h2 className="add-room-title">Add New Room</h2>
-      <div className="add-room-card">
-        <div className="add-room-form">
+      <div className="nav-buttons">
+        <button onClick={() => setCurrentView("addRoom")}>Add Room</button>
+        <button onClick={() => setCurrentView("bookedRooms")}>
+          Booked Rooms
+        </button>
+        <button onClick={() => setCurrentView("availableRooms")}>
+          Available Rooms
+        </button>
+        <button disabled>Analytics</button>
+      </div>
+
+      {currentView === "addRoom" && (
+        <div className="add-room-card">
+          <h2 className="add-room-title">Add New Room</h2>
           <label>Room Number:</label>
           <input
             type="text"
@@ -222,7 +213,6 @@ function AdminDashboard() {
             onChange={(e) => setRoomNumber(e.target.value)}
             className="add-room-input"
           />
-          <br></br>
           <label>Price:</label>
           <input
             type="text"
@@ -230,7 +220,6 @@ function AdminDashboard() {
             onChange={(e) => setPrice(e.target.value)}
             className="add-room-input"
           />
-          <br></br>
           <label>Location:</label>
           <input
             type="text"
@@ -238,7 +227,6 @@ function AdminDashboard() {
             onChange={(e) => setLocation(e.target.value)}
             className="add-room-input"
           />
-          <br></br>
           <label>Photos:</label>
           <input
             type="file"
@@ -255,43 +243,16 @@ function AdminDashboard() {
             </button>
           )}
         </div>
-      </div>
+      )}
 
-      <h3 className="available-rooms-title">Available Rooms</h3>
-      <div className="available-rooms">
-        {rooms.map((room) => (
-          <div key={room.id} className="room-card">
-            <div className="room-photos">
-              <img src={room.photos[0]} alt="Room" className="room-image" />
-            </div>
-            <p>Room Number: {room.roomNumber}</p>
-            <p>Price: {room.price}</p>
-            <p>Location: {room.location}</p>
-            <button
-              className="add-room-button"
-              onClick={() => handleEditRoom(room)}
-            >
-              Edit
-            </button>
-            <button
-              className="add-room-button"
-              onClick={() => handleDeleteRoom(room.id)}
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Booked Rooms Table */}
-      <h3 className="booked-rooms-title">Booked Rooms</h3>
-      <div className="booked-rooms">
-        {bookedRooms.length > 0 ? (
+      {currentView === "bookedRooms" && (
+        <div>
+          <h3 className="booked-rooms-title">Booked Rooms</h3>
           <table className="booked-rooms-table">
             <thead>
               <tr>
                 <th>Room Number</th>
-                <th>User Name</th>
+                <th>User ID</th>
                 <th>Email</th>
                 <th>Check-in Date</th>
                 <th>Check-out Date</th>
@@ -304,7 +265,7 @@ function AdminDashboard() {
               {bookedRooms.map((booking, index) => (
                 <tr key={index}>
                   <td>{booking.roomNumber}</td>
-                  <td>{booking.userName}</td>
+                  <td>{booking.userId}</td>
                   <td>{booking.userEmail}</td>
                   <td>
                     {new Date(
@@ -321,41 +282,47 @@ function AdminDashboard() {
                   <td>
                     {booking.status === "pending" && (
                       <>
-                        <button
-                          className="action-button"
-                          onClick={() => handleApproveBooking(booking)}
-                        >
+                        <button onClick={() => handleApproveBooking(booking)}>
                           Approve
                         </button>
-                        <button
-                          className="action-button"
-                          onClick={() => handleRejectBooking(booking)}
-                        >
+                        <button onClick={() => handleRejectBooking(booking)}>
                           Reject
-                        </button>
-                        <button
-                          className="action-button"
-                          onClick={() => handleEditBooking(booking)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="action-button"
-                          onClick={() => handleDeleteBooking(booking)}
-                        >
-                          Delete
                         </button>
                       </>
                     )}
+                    {booking.status === "approved" && (
+                      <button onClick={() => handleDeleteBooking(booking)}>
+                        Delete
+                      </button>
+                    )}
+                    <button onClick={() => handleEditBooking(booking)}>
+                      Edit
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        ) : (
-          <p>No rooms booked yet.</p>
-        )}
-      </div>
+        </div>
+      )}
+
+      {currentView === "availableRooms" && (
+        <div>
+          <h2>Available Rooms</h2>
+          <ul className="room-list">
+            {rooms.map((room) => (
+              <li key={room.id}>
+                <span>Room {room.roomNumber}</span>
+                <span>Price: R{room.price}</span>
+                <button onClick={() => handleEditRoom(room)}>Edit</button>
+                <button onClick={() => handleDeleteRoom(room.id)}>
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
