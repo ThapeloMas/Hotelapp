@@ -140,7 +140,6 @@ function AdminDashboard() {
     }
   };
 
-  // Handlers for booking actions
   const handleApproveBooking = async (booking) => {
     try {
       const userRef = doc(db, "booked", booking.userId);
@@ -206,33 +205,35 @@ function AdminDashboard() {
       {currentView === "addRoom" && (
         <div className="add-room-card">
           <h2 className="add-room-title">Add New Room</h2>
-          <label>Room Number:</label>
-          <input
-            type="text"
-            value={roomNumber}
-            onChange={(e) => setRoomNumber(e.target.value)}
-            className="add-room-input"
-          />
-          <label>Price:</label>
-          <input
-            type="text"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="add-room-input"
-          />
-          <label>Location:</label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="add-room-input"
-          />
-          <label>Photos:</label>
-          <input
-            type="file"
-            onChange={handlePhotoUpload}
-            className="add-room-input"
-          />
+          <div className="add-room-form">
+            <label>Room Number:</label>
+            <input
+              type="text"
+              value={roomNumber}
+              onChange={(e) => setRoomNumber(e.target.value)}
+              className="add-room-input"
+            />
+            <label>Price:</label>
+            <input
+              type="text"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="add-room-input"
+            />
+            <label>Location:</label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="add-room-input"
+            />
+            <label>Photos:</label>
+            <input
+              type="file"
+              onChange={handlePhotoUpload}
+              className="add-room-input"
+            />
+          </div>
           {editRoomId ? (
             <button className="add-room-button" onClick={handleUpdateRoom}>
               Update Room
@@ -280,7 +281,7 @@ function AdminDashboard() {
                   <td>R{booking.totalPrice}</td>
                   <td>{booking.status}</td>
                   <td>
-                    {booking.status === "pending" && (
+                    {booking.status === "pending" ? (
                       <>
                         <button onClick={() => handleApproveBooking(booking)}>
                           Approve
@@ -289,14 +290,13 @@ function AdminDashboard() {
                           Reject
                         </button>
                       </>
-                    )}
-                    {booking.status === "approved" && (
-                      <button onClick={() => handleDeleteBooking(booking)}>
-                        Delete
+                    ) : (
+                      <button onClick={() => handleEditBooking(booking)}>
+                        Edit
                       </button>
                     )}
-                    <button onClick={() => handleEditBooking(booking)}>
-                      Edit
+                    <button onClick={() => handleDeleteBooking(booking)}>
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -307,20 +307,25 @@ function AdminDashboard() {
       )}
 
       {currentView === "availableRooms" && (
-        <div>
-          <h2>Available Rooms</h2>
-          <ul className="room-list">
-            {rooms.map((room) => (
-              <li key={room.id}>
-                <span>Room {room.roomNumber}</span>
-                <span>Price: R{room.price}</span>
-                <button onClick={() => handleEditRoom(room)}>Edit</button>
-                <button onClick={() => handleDeleteRoom(room.id)}>
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
+        <div className="available-rooms">
+          {rooms.map((room) => (
+            <div className="room-card" key={room.id}>
+              <div className="room-photos">
+                {room.photos.map((photo, index) => (
+                  <img
+                    key={index}
+                    src={photo}
+                    alt={`Room ${room.roomNumber}`}
+                    className="room-image"
+                  />
+                ))}
+              </div>
+              <span>Room {room.roomNumber}</span>
+              <span>Price: R{room.price}</span>
+              <button onClick={() => handleEditRoom(room)}>Edit</button>
+              <button onClick={() => handleDeleteRoom(room.id)}>Delete</button>
+            </div>
+          ))}
         </div>
       )}
     </div>
